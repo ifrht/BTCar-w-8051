@@ -1,0 +1,171 @@
+A51 MACRO ASSEMBLER  MAIN                                                                 05/13/2017 21:31:09 PAGE     1
+
+
+MACRO ASSEMBLER A51 V8.2.5.0
+OBJECT MODULE PLACED IN .\Objects\main.obj
+ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE main.asm SET(SMALL) DEBUG PRINT(.\Listings\main.lst) OBJECT(.\Objects\m
+                      ain.obj) EP
+
+LOC  OBJ            LINE     SOURCE
+
+                       1     ;13.05.2017
+
+                       2     ;Ferhat Inalkaç
+
+                       3     ;Mikroislemci Tabanli Sistem Tasarimi Dönem Projesi
+
+                       4     ;Bluetooth Kontrollü Model Araç Tasarimi
+
+0000                   5     org 00h
+
+0000 802E              6     sjmp main
+
+0023                   7     org 0023h
+
+0023 801C              8     sjmp veri
+
+0030                   9     org 30h
+
+0030                  10     main:
+
+  0090                11     motorSag_ileri equ p1.0
+
+  0091                12     motorSag_geri equ p1.1
+
+  0092                13     motorSol_ileri equ p1.2
+
+  0093                14     motorSol_geri equ p1.3
+
+  0094                15     hiz_kontrol equ p1.4
+
+0030 758920           16     mov tmod,#20h
+
+0033 759850           17     mov scon,#50h
+
+0036 758DFD           18     mov th1,#-3
+
+0039 D28E             19     setb tr1
+
+003B D2AC             20     setb es
+
+003D D2AF             21     setb ea
+
+003F 80FE             22     sjmp $
+
+                      23     
+
+0041                  24     veri:
+
+0041 C298             25     clr ri
+
+0043 E599             26     mov a,sbuf
+
+0045 B45309           27     cjne a,#"S",ileri
+
+0048                  28     dur:
+
+0048 C290             29     clr motorSag_ileri
+
+004A C291             30     clr motorSag_geri
+
+004C C292             31     clr motorSol_ileri
+
+004E C293             32     clr motorSol_geri
+
+0050 32               33     reti
+
+0051                  34     ileri:
+
+0051 B44609           35     cjne a,#"F",geri
+
+0054 D290             36     setb motorSag_ileri
+
+0056 C291             37     clr motorSag_geri
+
+0058 D292             38     setb motorSol_ileri
+
+005A C293             39     clr motorSol_geri
+
+005C 32               40     reti
+
+005D                  41     geri:
+
+005D B44209           42     cjne a,#"B",sag
+
+0060 C290             43     clr motorSag_ileri
+
+0062 D291             44     setb motorSag_geri
+
+0064 C292             45     clr motorSol_ileri
+
+0066 D293             46     setb motorSol_geri
+
+0068 32               47     reti
+
+0069                  48     sag:
+
+0069 B45209           49     cjne a,#"R",sol
+
+006C C290             50     clr motorSag_ileri
+
+006E D291             51     setb motorSag_geri
+
+0070 D292             52     setb motorSol_ileri
+
+0072 C293             53     clr motorSol_geri
+
+0074 32               54     reti
+
+0075                  55     sol:
+
+0075 B44CD0           56     cjne a,#"L",dur
+
+0078 D290             57     setb motorSag_ileri
+
+A51 MACRO ASSEMBLER  MAIN                                                                 05/13/2017 21:31:09 PAGE     2
+
+007A C291             58     clr motorSag_geri
+
+007C C292             59     clr motorSol_ileri
+
+007E D293             60     setb motorSol_geri
+
+0080 32               61     reti
+
+                      62     end
+
+A51 MACRO ASSEMBLER  MAIN                                                                 05/13/2017 21:31:09 PAGE     3
+
+SYMBOL TABLE LISTING
+------ ----- -------
+
+
+N A M E             T Y P E  V A L U E   ATTRIBUTES
+
+DUR. . . . . . . .  C ADDR   0048H   A   
+EA . . . . . . . .  B ADDR   00A8H.7 A   
+ES . . . . . . . .  B ADDR   00A8H.4 A   
+GERI . . . . . . .  C ADDR   005DH   A   
+HIZ_KONTROL. . . .  B ADDR   0090H.4 A   
+ILERI. . . . . . .  C ADDR   0051H   A   
+MAIN . . . . . . .  C ADDR   0030H   A   
+MOTORSAG_GERI. . .  B ADDR   0090H.1 A   
+MOTORSAG_ILERI . .  B ADDR   0090H.0 A   
+MOTORSOL_GERI. . .  B ADDR   0090H.3 A   
+MOTORSOL_ILERI . .  B ADDR   0090H.2 A   
+P1 . . . . . . . .  D ADDR   0090H   A   
+RI . . . . . . . .  B ADDR   0098H.0 A   
+SAG. . . . . . . .  C ADDR   0069H   A   
+SBUF . . . . . . .  D ADDR   0099H   A   
+SCON . . . . . . .  D ADDR   0098H   A   
+SOL. . . . . . . .  C ADDR   0075H   A   
+TH1. . . . . . . .  D ADDR   008DH   A   
+TMOD . . . . . . .  D ADDR   0089H   A   
+TR1. . . . . . . .  B ADDR   0088H.6 A   
+VERI . . . . . . .  C ADDR   0041H   A   
+
+
+REGISTER BANK(S) USED: 0 
+
+
+ASSEMBLY COMPLETE.  0 WARNING(S), 0 ERROR(S)
