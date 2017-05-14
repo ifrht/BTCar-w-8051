@@ -1,4 +1,4 @@
-A51 MACRO ASSEMBLER  MAIN                                                                 05/13/2017 21:31:09 PAGE     1
+A51 MACRO ASSEMBLER  MAIN                                                                 05/14/2017 22:37:43 PAGE     1
 
 
 MACRO ASSEMBLER A51 V8.2.5.0
@@ -22,7 +22,7 @@ LOC  OBJ            LINE     SOURCE
 
 0023                   7     org 0023h
 
-0023 801C              8     sjmp veri
+0023 801C              8     sjmp islem
 
 0030                   9     org 30h
 
@@ -54,7 +54,7 @@ LOC  OBJ            LINE     SOURCE
 
                       23     
 
-0041                  24     veri:
+0041                  24     islem:
 
 0041 C298             25     clr ri
 
@@ -118,11 +118,11 @@ LOC  OBJ            LINE     SOURCE
 
 0075                  55     sol:
 
-0075 B44CD0           56     cjne a,#"L",dur
+0075 B44C09           56     cjne a,#"L",Gdurumu
 
 0078 D290             57     setb motorSag_ileri
 
-A51 MACRO ASSEMBLER  MAIN                                                                 05/13/2017 21:31:09 PAGE     2
+A51 MACRO ASSEMBLER  MAIN                                                                 05/14/2017 22:37:43 PAGE     2
 
 007A C291             58     clr motorSag_geri
 
@@ -132,9 +132,65 @@ LOC  OBJ            LINE     SOURCE
 
 0080 32               61     reti
 
-                      62     end
+0081                  62     Gdurumu:
 
-A51 MACRO ASSEMBLER  MAIN                                                                 05/13/2017 21:31:09 PAGE     3
+0081 B44709           63     cjne a,#"G",Idurumu
+
+0084 D290             64     setb motorSag_ileri
+
+0086 C291             65     clr motorSag_geri
+
+0088 C292             66     clr motorSol_ileri
+
+008A C293             67     clr motorSol_geri
+
+008C 32               68     reti
+
+008D                  69     Idurumu:
+
+008D B44909           70     cjne a,#"I",Hdurumu
+
+0090 C290             71     clr motorSag_ileri
+
+0092 C291             72     clr motorSag_geri
+
+0094 D292             73     setb motorSol_ileri
+
+0096 C293             74     clr motorSol_geri
+
+0098 32               75     reti
+
+0099                  76     Hdurumu:
+
+0099 B44809           77     cjne a,#"H",Jdurumu
+
+009C C290             78     clr motorSag_ileri
+
+009E D291             79     setb motorSag_geri
+
+00A0 C292             80     clr motorSol_ileri
+
+00A2 C293             81     clr motorSol_geri
+
+00A4 32               82     reti
+
+00A5                  83     Jdurumu:
+
+00A5 B448A0           84     cjne a,#"H",dur
+
+00A8 C290             85     clr motorSag_ileri
+
+00AA C291             86     clr motorSag_geri
+
+00AC D292             87     setb motorSol_ileri
+
+00AE C293             88     clr motorSol_geri
+
+00B0 32               89     reti
+
+                      90     end
+
+A51 MACRO ASSEMBLER  MAIN                                                                 05/14/2017 22:37:43 PAGE     3
 
 SYMBOL TABLE LISTING
 ------ ----- -------
@@ -145,9 +201,14 @@ N A M E             T Y P E  V A L U E   ATTRIBUTES
 DUR. . . . . . . .  C ADDR   0048H   A   
 EA . . . . . . . .  B ADDR   00A8H.7 A   
 ES . . . . . . . .  B ADDR   00A8H.4 A   
+GDURUMU. . . . . .  C ADDR   0081H   A   
 GERI . . . . . . .  C ADDR   005DH   A   
+HDURUMU. . . . . .  C ADDR   0099H   A   
 HIZ_KONTROL. . . .  B ADDR   0090H.4 A   
+IDURUMU. . . . . .  C ADDR   008DH   A   
 ILERI. . . . . . .  C ADDR   0051H   A   
+ISLEM. . . . . . .  C ADDR   0041H   A   
+JDURUMU. . . . . .  C ADDR   00A5H   A   
 MAIN . . . . . . .  C ADDR   0030H   A   
 MOTORSAG_GERI. . .  B ADDR   0090H.1 A   
 MOTORSAG_ILERI . .  B ADDR   0090H.0 A   
@@ -162,7 +223,6 @@ SOL. . . . . . . .  C ADDR   0075H   A
 TH1. . . . . . . .  D ADDR   008DH   A   
 TMOD . . . . . . .  D ADDR   0089H   A   
 TR1. . . . . . . .  B ADDR   0088H.6 A   
-VERI . . . . . . .  C ADDR   0041H   A   
 
 
 REGISTER BANK(S) USED: 0 

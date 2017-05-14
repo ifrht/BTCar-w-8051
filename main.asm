@@ -5,7 +5,7 @@
 org 00h
 sjmp main
 org 0023h
-sjmp veri
+sjmp islem
 org 30h
 main:
 motorSag_ileri equ p1.0
@@ -21,7 +21,7 @@ setb es
 setb ea
 sjmp $
 
-veri:
+islem:
 clr ri
 mov a,sbuf
 cjne a,#"S",ileri
@@ -53,10 +53,38 @@ setb motorSol_ileri
 clr motorSol_geri
 reti
 sol:
-cjne a,#"L",dur
+cjne a,#"L",Gdurumu
 setb motorSag_ileri
 clr motorSag_geri
 clr motorSol_ileri
 setb motorSol_geri
+reti
+Gdurumu:
+cjne a,#"G",Idurumu
+setb motorSag_ileri
+clr motorSag_geri
+clr motorSol_ileri
+clr motorSol_geri
+reti
+Idurumu:
+cjne a,#"I",Hdurumu
+clr motorSag_ileri
+clr motorSag_geri
+setb motorSol_ileri
+clr motorSol_geri
+reti
+Hdurumu:
+cjne a,#"H",Jdurumu
+clr motorSag_ileri
+setb motorSag_geri
+clr motorSol_ileri
+clr motorSol_geri
+reti
+Jdurumu:
+cjne a,#"H",dur
+clr motorSag_ileri
+clr motorSag_geri
+setb motorSol_ileri
+clr motorSol_geri
 reti
 end
