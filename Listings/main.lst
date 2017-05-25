@@ -1,4 +1,4 @@
-A51 MACRO ASSEMBLER  MAIN                                                                 05/14/2017 22:37:43 PAGE     1
+A51 MACRO ASSEMBLER  MAIN                                                                 05/25/2017 23:41:20 PAGE     1
 
 
 MACRO ASSEMBLER A51 V8.2.5.0
@@ -8,189 +8,363 @@ ASSEMBLER INVOKED BY: C:\Keil_v5\C51\BIN\A51.EXE main.asm SET(SMALL) DEBUG PRINT
 
 LOC  OBJ            LINE     SOURCE
 
-                       1     ;13.05.2017
+                       1     ;||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-                       2     ;Ferhat Inalkaç
+                       2     ;||------------------------------13.05.2017------------------------------||
 
-                       3     ;Mikroislemci Tabanli Sistem Tasarimi Dönem Projesi
+                       3     ;||----------------------------Ferhat Inalkac----------------------------||
 
-                       4     ;Bluetooth Kontrollü Model Araç Tasarimi
+                       4     ;||----------Mikroislemci Tabanli Sistem Tasarimi Donem Projesi----------||
 
-0000                   5     org 00h
+                       5     ;||------------Bluetooth ve PWM Kontrollu Model Arac Tasarimi------------||
 
-0000 802E              6     sjmp main
+                       6     ;||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
 
-0023                   7     org 0023h
+0000                   7     org 00h
 
-0023 801C              8     sjmp islem
+0000 802E              8     sjmp main
 
-0030                   9     org 30h
+000B                   9     org 0bh
 
-0030                  10     main:
+000B 8042             10     sjmp pwm_kesme
 
-  0090                11     motorSag_ileri equ p1.0
+0023                  11     org 0023h
 
-  0091                12     motorSag_geri equ p1.1
+0023 804E             12     sjmp seri_kesme
 
-  0092                13     motorSol_ileri equ p1.2
+0030                  13     org 30h
 
-  0093                14     motorSol_geri equ p1.3
+0030                  14     main:
 
-  0094                15     hiz_kontrol equ p1.4
+                      15     ;--------------------PIN ATAMALARI
 
-0030 758920           16     mov tmod,#20h
+  0090                16     motorSag_ileri equ p1.0
 
-0033 759850           17     mov scon,#50h
+  0091                17     motorSag_geri equ p1.1
 
-0036 758DFD           18     mov th1,#-3
+  0092                18     motorSol_ileri equ p1.2
 
-0039 D28E             19     setb tr1
+  0093                19     motorSol_geri equ p1.3
 
-003B D2AC             20     setb es
+                      20     ;--------------------PWM KONTROL
 
-003D D2AF             21     setb ea
+  REG                 21     pwm equ r1
 
-003F 80FE             22     sjmp $
+  0094                22     pwm_pin equ p1.4
 
-                      23     
+0030 758C00           23     mov th0,#00h
 
-0041                  24     islem:
+0033 758A00           24     mov tl0,#00h
 
-0041 C298             25     clr ri
+0036 7AFF             25     mov r2,#255
 
-0043 E599             26     mov a,sbuf
+0038 7900             26     mov r1,#00h
 
-0045 B45309           27     cjne a,#"S",ileri
+003A D2A9             27     setb et0
 
-0048                  28     dur:
+003C D28C             28     setb tr0
 
-0048 C290             29     clr motorSag_ileri
+                      29     ;--------------------INTERRUPT VE TIMER KONTROL
 
-004A C291             30     clr motorSag_geri
+003E 758921           30     mov tmod,#21h
 
-004C C292             31     clr motorSol_ileri
+0041 759850           31     mov scon,#50h
 
-004E C293             32     clr motorSol_geri
+0044 758DFD           32     mov th1,#-3
 
-0050 32               33     reti
+0047 D28E             33     setb tr1
 
-0051                  34     ileri:
+0049 D2AC             34     setb es
 
-0051 B44609           35     cjne a,#"F",geri
+004B D2AF             35     setb ea
 
-0054 D290             36     setb motorSag_ileri
+004D 80FE             36     sjmp $
 
-0056 C291             37     clr motorSag_geri
+                      37     ;--------------------PWM KESMESI
 
-0058 D292             38     setb motorSol_ileri
+004F                  38     pwm_kesme:
 
-005A C293             39     clr motorSol_geri
+004F C28C             39     clr tr0
 
-005C 32               40     reti
+0051 209402           40     jb pwm_pin,dongu1
 
-005D                  41     geri:
+0054 8010             41     sjmp dongu2
 
-005D B44209           42     cjne a,#"B",sag
+0056                  42     dongu1:
 
-0060 C290             43     clr motorSag_ileri
+0056 C294             43     clr pwm_pin
 
-0062 D291             44     setb motorSag_geri
+0058 74FF             44     mov a,#255
 
-0064 C292             45     clr motorSol_ileri
+005A 99               45     subb a,pwm
 
-0066 D293             46     setb motorSol_geri
+005B F8               46     mov r0,a
 
-0068 32               47     reti
+005C 74FF             47     mov a,#0ffh
 
-0069                  48     sag:
+005E 98               48     subb a,r0
 
-0069 B45209           49     cjne a,#"R",sol
+005F 758CFF           49     mov th0,#0ffh
 
-006C C290             50     clr motorSag_ileri
+0062 F58A             50     mov tl0,a
 
-006E D291             51     setb motorSag_geri
+0064 800A             51     sjmp bitir
 
-0070 D292             52     setb motorSol_ileri
+0066                  52     dongu2:
 
-0072 C293             53     clr motorSol_geri
+0066 D294             53     setb pwm_pin
 
-0074 32               54     reti
+0068 74FF             54     mov a,#0ffh
 
-0075                  55     sol:
+006A 99               55     subb a,pwm
 
-0075 B44C09           56     cjne a,#"L",Gdurumu
+006B 758CFF           56     mov th0,#0ffh
 
-0078 D290             57     setb motorSag_ileri
+006E F58A             57     mov tl0,a
 
-A51 MACRO ASSEMBLER  MAIN                                                                 05/14/2017 22:37:43 PAGE     2
+A51 MACRO ASSEMBLER  MAIN                                                                 05/25/2017 23:41:20 PAGE     2
 
-007A C291             58     clr motorSag_geri
+0070                  58     bitir:
 
-007C C292             59     clr motorSol_ileri
+0070 D28C             59     setb tr0
 
-007E D293             60     setb motorSol_geri
+0072 32               60     reti
 
-0080 32               61     reti
+                      61     ;--------------------SERI HABERLESME KESMESI
 
-0081                  62     Gdurumu:
+0073                  62     seri_kesme:
 
-0081 B44709           63     cjne a,#"G",Idurumu
+0073 C298             63     clr ri
 
-0084 D290             64     setb motorSag_ileri
+0075 E599             64     mov a,sbuf
 
-0086 C291             65     clr motorSag_geri
+0077 B45309           65     cjne a,#"S",ileri
 
-0088 C292             66     clr motorSol_ileri
+007A                  66     dur:
 
-008A C293             67     clr motorSol_geri
+007A C290             67     clr motorSag_ileri
 
-008C 32               68     reti
+007C C291             68     clr motorSag_geri
 
-008D                  69     Idurumu:
+007E C292             69     clr motorSol_ileri
 
-008D B44909           70     cjne a,#"I",Hdurumu
+0080 C293             70     clr motorSol_geri
 
-0090 C290             71     clr motorSag_ileri
+0082 32               71     reti
 
-0092 C291             72     clr motorSag_geri
+0083                  72     ileri:
 
-0094 D292             73     setb motorSol_ileri
+0083 B44609           73     cjne a,#"F",geri
 
-0096 C293             74     clr motorSol_geri
+0086 D290             74     setb motorSag_ileri
 
-0098 32               75     reti
+0088 C291             75     clr motorSag_geri
 
-0099                  76     Hdurumu:
+008A D292             76     setb motorSol_ileri
 
-0099 B44809           77     cjne a,#"H",Jdurumu
+008C C293             77     clr motorSol_geri
 
-009C C290             78     clr motorSag_ileri
+008E 32               78     reti
 
-009E D291             79     setb motorSag_geri
+008F                  79     geri:
 
-00A0 C292             80     clr motorSol_ileri
+008F B44209           80     cjne a,#"B",sag
 
-00A2 C293             81     clr motorSol_geri
+0092 C290             81     clr motorSag_ileri
 
-00A4 32               82     reti
+0094 D291             82     setb motorSag_geri
 
-00A5                  83     Jdurumu:
+0096 C292             83     clr motorSol_ileri
 
-00A5 B448A0           84     cjne a,#"H",dur
+0098 D293             84     setb motorSol_geri
 
-00A8 C290             85     clr motorSag_ileri
+009A 32               85     reti
 
-00AA C291             86     clr motorSag_geri
+009B                  86     sag:
 
-00AC D292             87     setb motorSol_ileri
+009B B45209           87     cjne a,#"R",sol
 
-00AE C293             88     clr motorSol_geri
+009E C290             88     clr motorSag_ileri
 
-00B0 32               89     reti
+00A0 D291             89     setb motorSag_geri
 
-                      90     end
+00A2 D292             90     setb motorSol_ileri
 
-A51 MACRO ASSEMBLER  MAIN                                                                 05/14/2017 22:37:43 PAGE     3
+00A4 C293             91     clr motorSol_geri
+
+00A6 32               92     reti
+
+00A7                  93     sol:
+
+00A7 B44C09           94     cjne a,#"L",Gdurumu
+
+00AA D290             95     setb motorSag_ileri
+
+00AC C291             96     clr motorSag_geri
+
+00AE C292             97     clr motorSol_ileri
+
+00B0 D293             98     setb motorSol_geri
+
+00B2 32               99     reti
+
+00B3                 100     Gdurumu:
+
+00B3 B44709          101     cjne a,#"G",Idurumu
+
+00B6 D290            102     setb motorSag_ileri
+
+00B8 C291            103     clr motorSag_geri
+
+00BA C292            104     clr motorSol_ileri
+
+00BC C293            105     clr motorSol_geri
+
+00BE 32              106     reti
+
+00BF                 107     Idurumu:
+
+00BF B44909          108     cjne a,#"I",Hdurumu
+
+00C2 C290            109     clr motorSag_ileri
+
+00C4 C291            110     clr motorSag_geri
+
+00C6 D292            111     setb motorSol_ileri
+
+00C8 C293            112     clr motorSol_geri
+
+00CA 32              113     reti
+
+00CB                 114     Hdurumu:
+
+00CB B44809          115     cjne a,#"H",Jdurumu
+
+00CE C290            116     clr motorSag_ileri
+
+00D0 D291            117     setb motorSag_geri
+
+00D2 C292            118     clr motorSol_ileri
+
+00D4 C293            119     clr motorSol_geri
+
+00D6 32              120     reti
+
+00D7                 121     Jdurumu:
+
+00D7 B44A09          122     cjne a,#"J",HIZ1
+
+00DA C290            123     clr motorSag_ileri
+
+A51 MACRO ASSEMBLER  MAIN                                                                 05/25/2017 23:41:20 PAGE     3
+
+00DC C291            124     clr motorSag_geri
+
+00DE C292            125     clr motorSol_ileri
+
+00E0 D293            126     setb motorSol_geri
+
+00E2 32              127     reti
+
+00E3                 128     HIZ1:
+
+00E3 B43103          129     cjne a,#"1",HIZ2
+
+00E6 7919            130     mov pwm,#25
+
+00E8 32              131     reti
+
+00E9                 132     HIZ2:
+
+00E9 B43203          133     cjne a,#"2",HIZ3
+
+00EC 7932            134     mov pwm,#50
+
+00EE 32              135     reti
+
+00EF                 136     HIZ3:
+
+00EF B43303          137     cjne a,#"3",HIZ4
+
+00F2 794B            138     mov pwm,#75
+
+00F4 32              139     reti
+
+00F5                 140     HIZ4:
+
+00F5 B43403          141     cjne a,#"4",HIZ5
+
+00F8 7964            142     mov pwm,#100
+
+00FA 32              143     reti
+
+00FB                 144     HIZ5:
+
+00FB B43503          145     cjne a,#"5",HIZ6
+
+00FE 797D            146     mov pwm,#125
+
+0100 32              147     reti
+
+0101                 148     HIZ6:
+
+0101 B43603          149     cjne a,#"6",HIZ7
+
+0104 7996            150     mov pwm,#150
+
+0106 32              151     reti
+
+0107                 152     HIZ7:
+
+0107 B43703          153     cjne a,#"7",HIZ8
+
+010A 79AF            154     mov pwm,#175
+
+010C 32              155     reti
+
+010D                 156     HIZ8:
+
+010D B43803          157     cjne a,#"8",HIZ9
+
+0110 79C8            158     mov pwm,#200
+
+0112 32              159     reti
+
+0113                 160     HIZ9:
+
+0113 B43903          161     cjne a,#"9",HIZ10
+
+0116 79E1            162     mov pwm,#225
+
+0118 32              163     reti
+
+0119                 164     HIZ10:
+
+0119 B47103          165     cjne a,#"q",Ddurumu
+
+011C 79FF            166     mov pwm,#255
+
+011E 32              167     reti
+
+011F                 168     Ddurumu:
+
+011F B44400          169     cjne a,#"D",dur1
+
+0122                 170     dur1:
+
+0122 C290            171     clr motorSag_ileri
+
+0124 C291            172     clr motorSag_geri
+
+0126 C292            173     clr motorSol_ileri
+
+0128 C293            174     clr motorSol_geri
+
+012A 32              175     reti
+
+                     176     end
+
+A51 MACRO ASSEMBLER  MAIN                                                                 05/25/2017 23:41:20 PAGE     4
 
 SYMBOL TABLE LISTING
 ------ ----- -------
@@ -198,30 +372,51 @@ SYMBOL TABLE LISTING
 
 N A M E             T Y P E  V A L U E   ATTRIBUTES
 
-DUR. . . . . . . .  C ADDR   0048H   A   
+BITIR. . . . . . .  C ADDR   0070H   A   
+DDURUMU. . . . . .  C ADDR   011FH   A   
+DONGU1 . . . . . .  C ADDR   0056H   A   
+DONGU2 . . . . . .  C ADDR   0066H   A   
+DUR. . . . . . . .  C ADDR   007AH   A   
+DUR1 . . . . . . .  C ADDR   0122H   A   
 EA . . . . . . . .  B ADDR   00A8H.7 A   
 ES . . . . . . . .  B ADDR   00A8H.4 A   
-GDURUMU. . . . . .  C ADDR   0081H   A   
-GERI . . . . . . .  C ADDR   005DH   A   
-HDURUMU. . . . . .  C ADDR   0099H   A   
-HIZ_KONTROL. . . .  B ADDR   0090H.4 A   
-IDURUMU. . . . . .  C ADDR   008DH   A   
-ILERI. . . . . . .  C ADDR   0051H   A   
-ISLEM. . . . . . .  C ADDR   0041H   A   
-JDURUMU. . . . . .  C ADDR   00A5H   A   
+ET0. . . . . . . .  B ADDR   00A8H.1 A   
+GDURUMU. . . . . .  C ADDR   00B3H   A   
+GERI . . . . . . .  C ADDR   008FH   A   
+HDURUMU. . . . . .  C ADDR   00CBH   A   
+HIZ1 . . . . . . .  C ADDR   00E3H   A   
+HIZ10. . . . . . .  C ADDR   0119H   A   
+HIZ2 . . . . . . .  C ADDR   00E9H   A   
+HIZ3 . . . . . . .  C ADDR   00EFH   A   
+HIZ4 . . . . . . .  C ADDR   00F5H   A   
+HIZ5 . . . . . . .  C ADDR   00FBH   A   
+HIZ6 . . . . . . .  C ADDR   0101H   A   
+HIZ7 . . . . . . .  C ADDR   0107H   A   
+HIZ8 . . . . . . .  C ADDR   010DH   A   
+HIZ9 . . . . . . .  C ADDR   0113H   A   
+IDURUMU. . . . . .  C ADDR   00BFH   A   
+ILERI. . . . . . .  C ADDR   0083H   A   
+JDURUMU. . . . . .  C ADDR   00D7H   A   
 MAIN . . . . . . .  C ADDR   0030H   A   
 MOTORSAG_GERI. . .  B ADDR   0090H.1 A   
 MOTORSAG_ILERI . .  B ADDR   0090H.0 A   
 MOTORSOL_GERI. . .  B ADDR   0090H.3 A   
 MOTORSOL_ILERI . .  B ADDR   0090H.2 A   
 P1 . . . . . . . .  D ADDR   0090H   A   
+PWM. . . . . . . .    REG    R1          
+PWM_KESME. . . . .  C ADDR   004FH   A   
+PWM_PIN. . . . . .  B ADDR   0090H.4 A   
 RI . . . . . . . .  B ADDR   0098H.0 A   
-SAG. . . . . . . .  C ADDR   0069H   A   
+SAG. . . . . . . .  C ADDR   009BH   A   
 SBUF . . . . . . .  D ADDR   0099H   A   
 SCON . . . . . . .  D ADDR   0098H   A   
-SOL. . . . . . . .  C ADDR   0075H   A   
+SERI_KESME . . . .  C ADDR   0073H   A   
+SOL. . . . . . . .  C ADDR   00A7H   A   
+TH0. . . . . . . .  D ADDR   008CH   A   
 TH1. . . . . . . .  D ADDR   008DH   A   
+TL0. . . . . . . .  D ADDR   008AH   A   
 TMOD . . . . . . .  D ADDR   0089H   A   
+TR0. . . . . . . .  B ADDR   0088H.4 A   
 TR1. . . . . . . .  B ADDR   0088H.6 A   
 
 
